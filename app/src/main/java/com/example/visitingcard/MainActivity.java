@@ -3,6 +3,7 @@ package com.example.visitingcard;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,45 +24,42 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+    }
 
+    public void onCall(View view) {
         TextView phoneNumberTextView = findViewById(R.id.phoneNumber);
-        ImageView callIcon = findViewById(R.id.callIcon);
+        String phoneNumber = phoneNumberTextView.getText().toString();
+        Intent dialIntent = new Intent(Intent.ACTION_DIAL);
+        dialIntent.setData(Uri.parse("tel:" + phoneNumber));
+        startActivity(dialIntent);
+    }
 
+    public void onEmail(View view) {
         TextView emailTextView = findViewById(R.id.emailAddress);
-        ImageView emailIcon = findViewById(R.id.emailIcon);
+        String emailAddress = emailTextView.getText().toString();
 
-        callIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String phoneNumber = phoneNumberTextView.getText().toString();
-                Intent dialIntent = new Intent(Intent.ACTION_DIAL);
-                dialIntent.setData(Uri.parse("tel:" + phoneNumber));
-                startActivity(dialIntent);
-            }
-        });
+        if (!emailAddress.isEmpty()) {
+            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            emailIntent.setType("message/rfc822"); // Set the MIME type for email
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailAddress});
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject Here");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, "Email body text here");
 
-        emailIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String emailAddress = emailTextView.getText().toString();
+            startActivity(emailIntent);
+        } else {
+            Toast.makeText(MainActivity.this, "Email address is empty", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-                if (!emailAddress.isEmpty()) {
-                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                    emailIntent.setType("message/rfc822"); // Set the MIME type for email
-                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{emailAddress});
-                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject Here");
-                    emailIntent.putExtra(Intent.EXTRA_TEXT, "Email body text here");
+    public void onGithub(View view) {
+        String githubUrl = "https://github.com/taufiqislam"; // Replace with your GitHub profile URL
+        Intent githubIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(githubUrl));
+        startActivity(githubIntent);
+    }
 
-                    // Verify that there is an app to handle this intent
-                    if (emailIntent.resolveActivity(getPackageManager()) != null) {
-                        startActivity(Intent.createChooser(emailIntent, "Choose an email client"));
-                    } else {
-                        Toast.makeText(MainActivity.this, "No email app available", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(MainActivity.this, "Email address is empty", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+    public void onLinkedin(View view) {
+        String linkedinUrl = "https://www.linkedin.com/in/taufiq-islam-6a1073238"; // Replace with your LinkedIn profile URL
+        Intent linkedinIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(linkedinUrl));
+        startActivity(linkedinIntent);
     }
 }
